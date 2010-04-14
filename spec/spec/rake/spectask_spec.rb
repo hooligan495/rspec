@@ -141,8 +141,17 @@ module Spec
         
         it "creates an rcov options list" do
           MockTask.stub!(:create_task)
-          task = SpecTask.new(:rcov) {|t| t.rcov = true, t.rcov_opts = ['a','b']}
+          task = SpecTask.new(:rcov) {|t| t.rcov = true; t.rcov_opts = ['a','b']}
           task.rcov_option_list.should == "a b"
+        end
+        
+        it "creates a ruby options list with --debug if we are on jruby" do
+          MockTask.stub!(:create_task)
+          task = SpecTask.new(:rcov) {|t| t.rcov = true; t.rcov_opts = ['a','b']}
+          task.rcov_option_list.should == "a b"
+          task.ruby_opts.index("--debug").should_not be_nil if RUBY_PLATFORM =~ /java/
+          task.ruby_opts.index("--debug").should be_nil unless RUBY_PLATFORM =~ /java/
+          
         end
       end
     end

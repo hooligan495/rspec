@@ -149,6 +149,10 @@ module Spec
         unless ::Rake.application.last_comment
           desc "Run specs" + (rcov ? " using RCov" : "")
         end
+        
+        # not sure why I can't put this in the unless block below.  the rcov variable is ALWAYS false
+        ruby_opts << "--debug" if RUBY_PLATFORM =~ /java/ && ruby_opts.index("--debug").nil? && rcov
+
         task name do
           RakeFileUtils.verbose(verbose) do
             unless spec_file_list.empty?
